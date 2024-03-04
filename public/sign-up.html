@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WEBSERVICE /API Using NODEJS</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f6f6f6;
+            margin: 0;
+            padding: 0;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 30px;
+        }
+
+        form {
+            max-width: 500px;
+            margin: 20px auto;
+            background-color: #fff;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        label {
+            color: #555;
+            font-size: 18px;
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        input[type="text"],
+        input[type="number"],
+        input[type="email"],
+        input[type="password"],
+        button {
+            width: calc(100% - 20px);
+            padding: 12px;
+            margin-bottom: 10px;
+            border: none;
+            border-radius: 5px;
+            box-sizing: border-box;
+            font-size: 16px;
+        }
+
+        input[type="text"],
+        input[type="number"],
+        input[type="email"],
+        input[type="password"] {
+            background-color: #f9f9f9;
+            border: 1px solid #ccc;
+        }
+
+        input[type="text"]:focus,
+        input[type="number"]:focus,
+        input[type="email"]:focus,
+        input[type="password"]:focus {
+            outline: none;
+            border-color: #66afe9;
+        }
+
+        button {
+            background-color: #2980b9;
+            color: #fff;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #2980b9;
+        }
+
+        button:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+
+        small {
+            display: block;
+            color: #777;
+            font-size: 14px;
+            margin-bottom: 5px;
+        }
+
+        .one {
+            width: 80%;
+            margin: 0 auto;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Webservice / API Using Nodejs</h1>
+    <div class="one">
+        <form id="myForm">
+            <label for="fname">First Name:</label> <input type="text" id="fname" name="FIRST_NAME" required><br>
+            <small class="field-info">* Enter your first name</small>
+
+            <label for="lname">Last Name:</label> <input type="text" id="lname" name="LAST_NAME" required><br>
+            <small class="field-info">* Enter your last name</small>
+
+            <label for="text">Mobile Number:</label> <input type="text" id="number1" name="CONTACT"
+                title="must be a 10 number" required><br>
+            <small class="field-info">* 10 digits only</small>
+
+            <label for="email">Email:</label> <input type="email" id="email" name="EMAIL" required><br>
+            <small class="field-info">* Enter a valid email address</small>
+
+            <label for="city">City</label> <input type="text" id="city" name="CITY" required><br>
+
+            <label for="state">State</label> <input type="text" id="state" name="STATE" required><br>
+
+            <label for="country">Country</label> <input type="text" id="country" name="COUNTRY" required><br>
+
+            <label for="Login Id ">Login ID</label> <input type="text" id="Login" name="LOGIN" required><br>
+            <small class="field-info">* 8 characters, alphanumeric only</small>
+
+            <label for="Password">Password</label> <input type="password" id="password1" name="PASSWORD"
+                pattern="(?=.*\d)(?=.*[!@#$%^&*])(?=.*[a-zA-Z]).{8,}"
+                title="Password must be at least 8 characters long and contain at least one digit, one special character, and one letter."
+                required>
+            <small>* Minimum 6 characters, at least one uppercase, one lowercase, one digit, and one special
+                character</small><br>
+            <button onclick="checkpass(event)">Save</button> <br>
+        </form>
+    </div>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+
+        function checkpass(event) {
+
+            event.preventDefault();
+            const password = document.getElementById("password1").value;
+            const cno = document.getElementById("number1").value;
+            console.log(cno.length)
+            if (cno.length != 10) {
+                alert('INVALID MOBILE NUMBER');
+                event.preventDefault();
+            } else if (!/(?=.*\d)(?=.*[!@#$%^&*])(?=.*[a-zA-Z]).{8,}/.test(password)) {
+                alert('INVALID PASSWORD \nPassword must be at least 8 characters long and contain at least one digit, one special character, and one letter.');
+                event.preventDefault();
+            } else {
+                postdata(event);
+            }
+        }
+
+
+        function postdata(event) {
+            const formData = new FormData(document.getElementById("myForm"));
+            console.log("FormData:", formData);
+
+            const xhr = new XMLHttpRequest();
+            xhr.open("POST", "/sign-up", true);
+            xhr.setRequestHeader("Content-Type", "application/json");
+
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === 4) {
+                    console.log("Response status:", xhr.status);
+                    console.log("Response text:", xhr.responseText);
+                }
+            };
+            console.log(formData)
+            xhr.send(JSON.stringify(Object.fromEntries(formData)));
+
+            setTimeout(() => {
+                socket();
+            }, 1000)
+
+        }
+
+
+
+        function socket() {
+            const socket = io();
+
+            const inputElement = document.getElementById("fname");
+            const inputValue = inputElement.value;
+
+
+            socket.emit('name', inputValue)
+            console.log("below the  emit name ")
+            // socket.on('display-users',(active_user)=>console.log("get data ", active_user))
+            // setTimeout(() => {
+            //     socket.on('connected-user',(active_user)=>console.log(' all the connected users are',active_user))
+            //       }, 3000);
+
+
+            setTimeout(() => {
+                get_to_active_user_page()
+            }, 1000)
+
+        }
+
+
+        function socketdis() {
+            socket.io('disconnected')
+            console.log('DISCONNECTED')
+        }
+
+
+        function get_users(event) {
+            // event.preventDefault();
+            socket.emit('send_user_to_all', active_user)
+        }
+
+
+
+        function get_to_active_user_page() {
+            // window.location.href = 'http://localhost:7700/new-page';
+            window.location.href = "/active";
+        }
+    </script>
+
+</body>
+
+</html>

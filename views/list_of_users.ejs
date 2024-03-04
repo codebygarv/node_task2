@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Active Users List</title>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f5f5;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+
+        #container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        #one {
+            background-color: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            padding: 40px;
+            width: 80%;
+            max-width: 600px;
+        }
+
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        li {
+            margin-bottom: 20px;
+        }
+
+        a {
+            color: #3498db;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        a:hover {
+            color: #2980b9;
+        }
+
+        button {
+            background-color: #3498db;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #2980b9;
+        }
+
+        .popup {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: rgba(255, 255, 255, 0.9);
+            border: 1px solid #ccc;
+            padding: 20px;
+            z-index: 9999;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            max-width: 400px;
+            width: 90%;
+        }
+
+        .close {
+            color: #aaa;
+            font-size: 24px;
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        .close:hover {
+            color: #333;
+        }
+
+        .json-data {
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            text-align: left;
+            max-height: 300px;
+            overflow-y: auto;
+            padding: 10px;
+            background-color: #f8f9fa;
+            border-radius: 10px;
+            margin-top: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .li{
+            border: 1px solid lightgray;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    
+    <div id="container">
+        <div id="one">
+            <h1>Active Users</h1>
+            <ul>
+                <% Object.keys(active_users).forEach(id => { %>
+                    <li class="li"><a onclick="redirectToDetails('<%= id %>')"> User-Name: <%= active_users[id] %> Socket-ID :<%= id %> </a></li>
+                <% }); %>
+            </ul>
+
+            <button onclick="gotohome()">Back</button>
+
+            <div id="popup" class="popup">
+                <span class="close" onclick="closePopup()">&times;</span>
+                <h2>User saved Data</h2>
+                <div class="json-data" id="jsonData"></div> <!-- Element to display JSON data -->
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        const socket = io();   
+
+        function redirectToDetails(id){
+            socket.emit('fetch-data',id)
+            socket.on('user-details', function(user) {
+                console.log('Received user details:', user);
+                document.getElementById("jsonData").innerText = JSON.stringify(user, null, 2);
+                document.getElementById("popup").style.display = "block";
+            });
+        }
+
+        function closePopup() {
+            document.getElementById("popup").style.display = "none";
+        } 
+
+        function gotohome() {
+            window.location.href='/';
+        }
+
+    </script>
+</body>
+</html>

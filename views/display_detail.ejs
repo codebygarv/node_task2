@@ -1,0 +1,31 @@
+<!-- views/index.ejs -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JSON Data</title>
+  <style>
+    #one {
+    max-width: 600px; 
+    margin: 20px auto;
+    padding: 20px;
+    border: 1px solid #7b7777;
+    border-radius: 5px;
+    background: #e8fcd4;
+    text-align: left ;
+}
+  </style>
+</head>
+<body>
+  <div id="one">
+  <h1>User Information</h1>
+  <p>First name: <%= user["FIRST_NAME"] %></p>
+  <p>Last name: <%= user["LAST_NAME"] %></p>
+  <p>Age: <%= user["AGE"] %></p>
+  <p>City: <%= user["CITY"] %></p>
+  <p>County: <%= user["COUNTRY"] %></p>
+  <p>State :<%= user["STATE"] %></p>
+</div>
+</body>
+</html>
